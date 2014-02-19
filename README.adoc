@@ -1,6 +1,6 @@
 ---
-tags: []
-projects: []
+tags: [spring-boot, gorm, groovy]
+projects: [spring-boot]
 ---
 :spring_version: current
 :spring_boot_version: 1.0.0.RC3
@@ -14,18 +14,21 @@ projects: []
 :icons: font
 :source-highlighter: prettify
 :project_id: draft-gs-spring-boot-gorm
-This guide walks you through the process of creating a Spring Boot application that uses GORM and Hibernate for persistence.
+
+This guide walks you through the process of creating a Spring Boot application that uses Grails Object Relational Mapper (http://grails.org/doc/latest/guide/GORM.html[GORM]) and Hibernate for persistence.
 
 == What you'll build
 
-You'll build a Spring application that persists data to an in-memory database using GORM.
+You'll build a Spring application that persists data to an in-memory database using GORM. 
+
+NOTE: This guide only uses uses the Grails GORM library. You aren't required to use the full Grails web stack.
 
 
 == What you'll need
 
 :linkattrs:
 
-ifndef::java_version[:java_version: 1.6]
+ifndef::java_version[:java_version: 1.7]
 
  - About 15 minutes
  - A favorite text editor or IDE
@@ -62,7 +65,7 @@ Below is the https://github.com/spring-guides/{project_id}/blob/master/initial/b
 include::initial/build.gradle[]
 ----
 
-include::https://raw.github.com/spring-guides/getting-started-macros/master/bootstrap_starter_pom_disclaimer.adoc[]
+include::https://raw.github.com/spring-guides/getting-started-macros/master/spring-boot-gradle-plugin.adoc[]
 
 
 [[initial]]
@@ -76,11 +79,11 @@ In this example, we model a simple Person entity using GORM:
 include::complete/src/main/groovy/hello/Person.groovy[]
 ----
 
-Note that the constraint block defines any validation rules. 
+The http://grails.org/doc/latest/guide/GORM.html#gormConstraints[constraint block] defines any validation rules. In this case, the only constraint is that both fields must be provided.
 
 == Create a resource controller
 
-Create a new controller for your Spring/Groovy application:
+Create a controller for your Groovy-based Spring application:
 
 `src/main/groovy/hello/GreetingController.groovy`
 [source,groovy]
@@ -88,16 +91,44 @@ Create a new controller for your Spring/Groovy application:
 include::complete/src/main/groovy/hello/GreetingController.groovy[]
 ----
 
-The above example defines two REST endpoints - The `addPerson` endpoint allows the addition of new people and the `greet` endpoint greets a person by their first name.
+The above example defines two REST endpoints:
 
-You can create a new person by submitting a `POST` request. For example using the *nix `curl` tool:
+- The `addPerson` endpoint allows the addition of new people
+- The `greet` endpoint greets a person by their first name.
+
+Further down in the guide, you'll see how to run the application and create new `Person` entries.
+
+== Make the application executable
+
+Although it is possible to package this service as a traditional link:/understanding/WAR[WAR] file for deployment to an external application server, the simpler approach demonstrated below creates a standalone application. You package everything in a single, executable JAR file, driven by a good old Java `main()` method. Along the way, you use Spring's support for embedding the link:/understanding/Tomcat[Tomcat] servlet container as the HTTP runtime, instead of deploying to an external instance.
+
+
+`src/main/groovy/hello/Application.groovy`
+[source,groovy]
+----
+include::complete/src/main/groovy/hello/Application.groovy[]
+----
+
+The `main()` method defers to the {SpringApplication}[`SpringApplication`] helper class, providing `Application.class` as an argument to its `run()` method. This tells Spring to read the annotation metadata from `Application` and to manage it as a component in the link:/understanding/application-context[Spring application context].
+
+The `@ComponentScan` annotation tells Spring to search recursively through the `hello` package and its children for classes marked directly or indirectly with Spring's {Component}[`@Component`] annotation. This directive ensures that Spring finds and registers the `GreetingController`, because it is marked with `@Controller`, which in turn is a kind of `@Component` annotation.
+
+The {EnableAutoConfiguration}[`@EnableAutoConfiguration`] annotation switches on reasonable default behaviors based on the content of your classpath. For example, because the application depends on the embeddable version of Tomcat (tomcat-embed-core.jar), a Tomcat server is set up and configured with reasonable defaults on your behalf. And because the application also depends on Spring MVC (spring-webmvc.jar), a Spring MVC {DispatcherServlet}[`DispatcherServlet`] is configured and registered for you — no `web.xml` necessary! Auto-configuration is a powerful, flexible mechanism. See the {EnableAutoConfiguration}[API documentation] for further details.
+
+include::https://raw.github.com/spring-guides/getting-started-macros/master/build_an_executable_jar_subhead.adoc[]
+
+include::https://raw.github.com/spring-guides/getting-started-macros/master/build_an_executable_jar_with_both.adoc[]
+
+== Test the application
+
+With the application started, you can create a new person by submitting a `POST` request. For example using the *nix `curl` tool:
 
 [source,plain]
 ----
 $ curl -i -X POST -d "firstName=Homer&lastName=Simpson" http://localhost:8080/person/add
 ----
 
-Results in the following response indicating that a resource was created:
+This results in the following response indicating that a resource was created:
 
 [source]
 ----
@@ -121,41 +152,11 @@ Date: Wed, 19 Feb 2014 13:22:15 GMT
 Hello Homer!
 ----
 
-== Make the application executable
-
-Although it is possible to package this service as a traditional link:/understanding/WAR[WAR] file for deployment to an external application server, the simpler approach demonstrated below creates a standalone application. You package everything in a single, executable JAR file, driven by a good old Java `main()` method. Along the way, you use Spring's support for embedding the link:/understanding/Tomcat[Tomcat] servlet container as the HTTP runtime, instead of deploying to an external instance.
-
-
-`src/main/groovy/hello/Application.groovy`
-[source,groovy]
-----
-include::complete/src/main/groovy/hello/Application.groovy[]
-----
-
-The `main()` method defers to the {SpringApplication}[`SpringApplication`] helper class, providing `Application.class` as an argument to its `run()` method. This tells Spring to read the annotation metadata from `Application` and to manage it as a component in the link:/understanding/application-context[Spring application context].
-
-The `@ComponentScan` annotation tells Spring to search recursively through the `hello` package and its children for classes marked directly or indirectly with Spring's {Component}[`@Component`] annotation. This directive ensures that Spring finds and registers the `GreetingController`, because it is marked with `@Controller`, which in turn is a kind of `@Component` annotation.
-
-The {EnableAutoConfiguration}[`@EnableAutoConfiguration`] annotation switches on reasonable default behaviors based on the content of your classpath. For example, because the application depends on the embeddable version of Tomcat (tomcat-embed-core.jar), a Tomcat server is set up and configured with reasonable defaults on your behalf. And because the application also depends on Spring MVC (spring-webmvc.jar), a Spring MVC {DispatcherServlet}[`DispatcherServlet`] is configured and registered for you — no `web.xml` necessary! Auto-configuration is a powerful, flexible mechanism. See the {EnableAutoConfiguration}[API documentation] for further details.
-
-include::https://raw.github.com/spring-guides/getting-started-macros/master/build_an_executable_jar_subhead.adoc[]
-
-include::https://raw.github.com/spring-guides/getting-started-macros/master/build_an_executable_jar_with_both.adoc[]
-
-:module: service
-include::https://raw.github.com/spring-guides/getting-started-macros/master/run_the_application_with_both.adoc[]
-
-Logging output is displayed. The service should be up and running within a few seconds.
-
-
-== Test the application
-
-Now that the application is running, you can test it.
-
+NOTE: This RESTful front end was coded for demonstration purposes. You can plug in GORM wherever you need it for your application.
 
 == Summary
 
-Congratulations! You've just developed a Spring application! 
+Congratulations! You've just developed a Spring application using GORM for data access as well as a RESTful front end!
 
 
 
