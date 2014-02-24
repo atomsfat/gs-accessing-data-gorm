@@ -13,7 +13,7 @@ projects: [spring-boot]
 :toc:
 :icons: font
 :source-highlighter: prettify
-:project_id: gs-spring-boot-gorm
+:project_id: gs-accessing-data-gorm
 
 This guide walks you through the process of creating a Spring Boot application that uses Grails Object Relational Mapper (http://grails.org/doc/latest/guide/GORM.html[GORM]) and Hibernate for persistence.
 
