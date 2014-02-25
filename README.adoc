@@ -1,6 +1,6 @@
 ---
 tags: [spring-boot, gorm, groovy]
-projects: [spring-boot]
+projects: [spring-boot, grails]
 ---
 :spring_version: current
 :spring_boot_version: 1.0.0.RC3
