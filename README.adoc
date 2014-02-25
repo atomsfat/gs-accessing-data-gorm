@@ -119,6 +119,7 @@ include::https://raw.github.com/spring-guides/getting-started-macros/master/buil
 
 include::https://raw.github.com/spring-guides/getting-started-macros/master/build_an_executable_jar_with_both.adoc[]
 
+[[testing]]
 == Test the application
 
 With the application started, you can create a new person by submitting a `POST` request. For example using the *nix `curl` tool:
@@ -153,6 +154,32 @@ Hello Homer!
 ----
 
 NOTE: This RESTful front end was coded for demonstration purposes. You can plug in GORM wherever you need it for your application.
+
+== Groovy Script Support
+
+The previous example required you to setup a Gradle or Maven build, but you can also use GORM in a simple Groovy script. 
+
+As an example, create a new file called *app.groovy* and put the following code in it:
+
+`app.groovy`
+[source,groovy]
+----
+include::script/app.groovy[]
+----
+
+NOTE: It doesn't matter where the file is.
+
+Next, https://github.com/spring-projects/spring-boot#installing-the-cli[install Spring Boot's CLI].
+
+Run it as follows:
+
+----
+$ spring run app.groovy
+----
+
+NOTE: This assumes you shut down the previous application, to avoid a port collision.
+
+Then simply follow the previous steps to <<testing,test the application>>.
 
 == Summary
 
