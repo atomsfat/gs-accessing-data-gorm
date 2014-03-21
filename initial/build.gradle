@@ -13,7 +13,7 @@ apply plugin: 'groovy'
 apply plugin: 'spring-boot'
 
 jar {
-    baseName = 'gs-spring-boot-gorm'
+    baseName = 'gs-accessing-data-gorm'
     version =  '0.1.0'
 }
 
