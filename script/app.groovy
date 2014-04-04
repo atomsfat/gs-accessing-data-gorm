@@ -1,4 +1,4 @@
-@Grab("org.grails:gorm-hibernate4-spring-boot:1.0.0.RC1")
+@Grab("org.grails:gorm-hibernate4-spring-boot:1.0.0.RC2")
 @Grab("com.h2database:h2:1.3.173")
 import grails.persistence.*
 import org.springframework.http.*
