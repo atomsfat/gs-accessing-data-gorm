@@ -36,7 +36,7 @@ ifndef::java_version[:java_version: 1.7]
  - http://www.gradle.org/downloads[Gradle 1.8+] 
  - You can also import the code from this guide as well as view the web page directly into link:/guides/gs/sts[Spring Tool Suite (STS)] and work your way through it from there.
 
-include::https://raw.github.com/spring-guides/getting-started-macros/master/how_to_complete_this_guide.adoc[]
+include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/how_to_complete_this_guide.adoc[]
 
 
 [[scratch]]
@@ -65,7 +65,7 @@ Below is the https://github.com/spring-guides/{project_id}/blob/master/initial/b
 include::initial/build.gradle[]
 ----
 
-include::https://raw.github.com/spring-guides/getting-started-macros/master/spring-boot-gradle-plugin.adoc[]
+include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/spring-boot-gradle-plugin.adoc[]
 
 
 [[initial]]
@@ -115,9 +115,9 @@ The `@ComponentScan` annotation tells Spring to search recursively through the `
 
 The {EnableAutoConfiguration}[`@EnableAutoConfiguration`] annotation switches on reasonable default behaviors based on the content of your classpath. For example, because the application depends on the embeddable version of Tomcat (tomcat-embed-core.jar), a Tomcat server is set up and configured with reasonable defaults on your behalf. And because the application also depends on Spring MVC (spring-webmvc.jar), a Spring MVC {DispatcherServlet}[`DispatcherServlet`] is configured and registered for you — no `web.xml` necessary! Auto-configuration is a powerful, flexible mechanism. See the {EnableAutoConfiguration}[API documentation] for further details.
 
-include::https://raw.github.com/spring-guides/getting-started-macros/master/build_an_executable_jar_subhead.adoc[]
+include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/build_an_executable_jar_subhead.adoc[]
 
-include::https://raw.github.com/spring-guides/getting-started-macros/master/build_an_executable_jar_with_both.adoc[]
+include::https://raw.githubusercontent.com/spring-guides/getting-started-macros/master/build_an_executable_jar_with_both.adoc[]
 
 [[testing]]
 == Test the application
