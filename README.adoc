@@ -181,7 +181,7 @@ NOTE: This assumes you shut down the previous application, to avoid a port colli
 
 Then simply follow the previous steps to <<testing,test the application>>.
 
-== Configuration the DataSource
+== Configuring the DataSource
 
 The `javax.sql.DataSource` to be used to create connections can be configured as per the http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-configure-datasource[instructions in the Spring Boot user guide].
 
