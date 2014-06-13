@@ -1,5 +1,5 @@
-@Grab("org.grails:gorm-hibernate4-spring-boot:1.0.0.RELEASE")
-@Grab("com.h2database:h2")
+@Grab("org.grails:gorm-hibernate4-spring-boot:1.1.0.RELEASE")
+@Grab("h2")
 import grails.persistence.*
 import org.springframework.http.*
 import static org.springframework.web.bind.annotation.RequestMethod.*
