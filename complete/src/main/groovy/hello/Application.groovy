@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.context.annotation.ComponentScan
 
 @EnableAutoConfiguration
-@ComponentScan
+@ComponentScan(["services", "hello", "api", "config"])
 class Application {
     static void main(String[] args) {
         SpringApplication.run Application, args
