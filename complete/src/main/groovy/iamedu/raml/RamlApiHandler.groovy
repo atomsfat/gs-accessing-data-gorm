@@ -1,11 +1,11 @@
 package iamedu.raml
 
+import com.google.gson.Gson
 import com.google.gson.JsonParser
+import groovy.transform.Canonical
 import iamedu.raml.exception.RamlResponseValidationException
 import iamedu.raml.exception.handlers.RamlResponseValidationExceptionHandler
 import org.apache.commons.lang.StringUtils
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.ApplicationContext
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -18,19 +18,16 @@ import javax.servlet.http.HttpServletResponse
 /**
  * Created by atomsfat on 8/20/14.
  */
+@Canonical
 class RamlApiHandler {
 
-
-  @Autowired
-  private ApplicationContext appContext;
-
-  @Autowired
-  @Qualifier("sample-api")
+  ApplicationContext appContext
   RamlHandlerService ramlHandlerService
 
+  Boolean serveExamples = true
+  Boolean strictMode = false
 
-  Boolean serveExamples = true//env.getProperty("api.raml.serveExamples", Boolean)
-  Boolean strictMode = false //env.getProperty("api.raml.strictMode", Boolean)
+
 
 
   ResponseEntity<String> handle(HttpServletRequest request, HttpServletResponse response) {
@@ -39,7 +36,7 @@ class RamlApiHandler {
     def (endpointValidator, paramValues) = validator.handleResource(getForwardURI(request))
 
     def req = endpointValidator.handleRequest(request)
-    def methodName = req.method.toLowerCase()
+
 
     def service
     def result
@@ -51,7 +48,7 @@ class RamlApiHandler {
     }
 
     if (service) {
-      result = handleService(service)
+      result = handleService(service, req)
     } else {
       if (!serveExamples) {
         throw new RuntimeException("No service name ${req.serviceName} exists")
@@ -71,7 +68,6 @@ class RamlApiHandler {
       }
     }
 
-
     if ((result == null || result.body == null) && serveExamples) {
       result = endpointValidator.generateExampleResponse(req)
     }
@@ -80,6 +76,7 @@ class RamlApiHandler {
 
     if (result.contentType?.startsWith("application/json")) {
       responseHeaders.set("Content-Type", result.contentType);
+      Gson gson = new Gson()
       return new ResponseEntity<String>(gson.toJson(result.body), responseHeaders, HttpStatus.valueOf(result.statusCode))
     } else {
       responseHeaders.set("Content-Type", result.contentType);
@@ -88,8 +85,9 @@ class RamlApiHandler {
 
   }
 
-  private handleService(def service) {
+  private handleService(def service, def req) {
     def result
+    def methodName = req.method.toLowerCase()
     def methods = service.class.getMethods().grep {
       it.name == methodName
     }
