@@ -1,4 +1,4 @@
-package services.iamedu.api.raml
+package iamedu.raml
 
 import iamedu.raml.validator.ApiValidator
 import iamedu.raml.validator.ApiValidatorBuilder

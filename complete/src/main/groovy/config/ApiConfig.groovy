@@ -3,7 +3,7 @@ package config
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import services.iamedu.api.raml.RamlHandlerService
+import iamedu.raml.RamlHandlerService
 
 /**
  * Created by tomas on 8/20/14.

@@ -31,8 +31,6 @@ class EndpointValidator {
   Resource resource
   ResourceLoader loader
   Map<String, Action> actions
-
-  Gson gson = new Gson()
   JsonParser jsonParser = new JsonParser()
 
   EndpointValidator(ResourceLoader loader, Raml raml, String path, Resource resource, List params, Map<String, Action> actions) {
