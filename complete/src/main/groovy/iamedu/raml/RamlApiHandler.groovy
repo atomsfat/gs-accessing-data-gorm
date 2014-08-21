@@ -6,6 +6,8 @@ import groovy.transform.Canonical
 import iamedu.raml.exception.RamlResponseValidationException
 import iamedu.raml.exception.handlers.RamlResponseValidationExceptionHandler
 import org.apache.commons.lang.StringUtils
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.context.ApplicationContext
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -21,13 +23,13 @@ import javax.servlet.http.HttpServletResponse
 @Canonical
 class RamlApiHandler {
 
+  private static final Logger log = LoggerFactory.getLogger(RamlApiHandler.class)
+
   ApplicationContext appContext
   RamlHandlerService ramlHandlerService
 
   Boolean serveExamples = true
   Boolean strictMode = false
-
-
 
 
   ResponseEntity<String> handle(HttpServletRequest request, HttpServletResponse response) {
@@ -42,13 +44,13 @@ class RamlApiHandler {
     def result
     def exception
     def error = false
-
+    log.info "searching service ${req.serviceName}"
     if (appContext.containsBean(req.serviceName)) {
       service = appContext.getBean(req.serviceName)
     }
 
     if (service) {
-      result = handleService(service, req)
+      result = handleService(service, req, paramValues)
     } else {
       if (!serveExamples) {
         throw new RuntimeException("No service name ${req.serviceName} exists")
@@ -85,7 +87,7 @@ class RamlApiHandler {
 
   }
 
-  private handleService(def service, def req) {
+  private handleService(def service, def req, def paramValues) {
     def result
     def methodName = req.method.toLowerCase()
     def methods = service.class.getMethods().grep {
@@ -104,7 +106,7 @@ class RamlApiHandler {
       def headers = req.headers.each { k, v ->
         [k, v]
       }
-
+      log.info("Ready to invoke ${req.serviceName} dataAvailable -> [params : ${params} headers: ${headers}]")
       if (method.parameterTypes.size() == 0) {
         result = method.invoke(service)
       } else {

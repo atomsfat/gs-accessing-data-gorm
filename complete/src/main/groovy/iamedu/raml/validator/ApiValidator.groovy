@@ -63,6 +63,10 @@ class ApiValidator {
     def partPattern = /\{[^\{\}]*\}/
 
     def regexPath = resourcePath.replaceAll(partPattern, replacePartPattern)
+  //  println " --> ${(resourcePath =~ partPattern)}"
+    println "traits ${resource.getIs()}"
+    println "uriParameters ${resource.uriParameters}"
+
     def params = (resourcePath =~ partPattern).collect { it }.collect {
       def k = it.replaceAll(/\{|\}/, "")
       [k, resource.uriParameters.get(k)]
@@ -74,7 +78,9 @@ class ApiValidator {
   }
 
   private def processEndpoints(String prefix, Map resources) {
-    resources.each { key, resource ->
+    resources.each { key, Resource resource ->
+
+      println "weeee ->${resource.getIs()}"
       def currentPrefix  = "${prefix}${key}"
       if(resource.actions.size() > 0) {
         processEndpoint(currentPrefix.toString(), resource, resource.actions)
@@ -91,7 +97,8 @@ class ApiValidator {
     if(basePath.endsWith("/")) {
       basePath = basePath.substring(0, basePath.length() - 1)
     }
-
+    println "-->resources" + raml.resources
+    println "-->traits  " + raml.traits
     processEndpoints("", raml.resources)
   }
 

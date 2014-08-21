@@ -33,7 +33,7 @@ dependencies {
   compile("org.springframework.boot:spring-boot-starter-web")
   compile("org.grails:gorm-hibernate4-spring-boot:1.1.0.RELEASE")
 //  compile 'iamedu.api:api-annotations:0.1.0'
-  compile("org.raml:raml-parser:0.8.6") {
+  compile("org.raml:raml-parser:0.8.7") {
     exclude group: "org.slf4j", module: "slf4j-log4j12"
     exclude group: "commons-logging", module: "commons-logging"
     exclude group: "org.slf4j", module: "log4j-over-slf4j"
@@ -55,7 +55,7 @@ dependencies {
   testCompile "org.codehaus.groovy:groovy-all:2.1.7"
   testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
   testCompile "org.spockframework:spock-spring:0.7-groovy-2.0"
-  compile("org.springframework.boot:spring-boot-starter-test")
+  compile("org.springframework.boot:spring-boot-starter-ramlScript")
 }
 
 task wrapper(type: Wrapper) {

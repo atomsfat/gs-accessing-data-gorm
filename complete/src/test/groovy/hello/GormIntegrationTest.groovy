@@ -1,5 +1,6 @@
 package hello
 
+import junit.framework.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.IntegrationTest
 import org.springframework.boot.test.SpringApplicationContextLoader
@@ -14,7 +15,6 @@ import spock.lang.Specification
 
 @ContextConfiguration(loader = SpringApplicationContextLoader.class, classes = Application.class)
 @WebAppConfiguration
-@IntegrationTest
 public class GormIntegrationTest extends Specification{
 
 
