@@ -55,7 +55,7 @@ dependencies {
   testCompile "org.codehaus.groovy:groovy-all:2.1.7"
   testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
   testCompile "org.spockframework:spock-spring:0.7-groovy-2.0"
-  compile("org.springframework.boot:spring-boot-starter-ramlScript")
+  compile("org.springframework.boot:spring-boot-starter-test")
 }
 
 task wrapper(type: Wrapper) {

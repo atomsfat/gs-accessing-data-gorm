@@ -19,8 +19,6 @@ class GreetingController {
 
     @RequestMapping(value="/person/greet", method = GET)
     String greet(String firstName) {
-        println personService
-        logger.info("weeee --->>>pe" )
         def p = Person.findByFirstName(firstName)
         return p ? "Hello ${p.firstName}!" : "Person not found"
     }

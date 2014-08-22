@@ -5,6 +5,7 @@ import com.google.gson.JsonParser
 import groovy.transform.Canonical
 import iamedu.raml.exception.RamlResponseValidationException
 import iamedu.raml.exception.handlers.RamlResponseValidationExceptionHandler
+import iamedu.raml.validator.EndpointValidator
 import org.apache.commons.lang.StringUtils
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -35,7 +36,7 @@ class RamlApiHandler {
   ResponseEntity<String> handle(HttpServletRequest request, HttpServletResponse response) {
 
     def validator = ramlHandlerService.buildValidator()
-    def (endpointValidator, paramValues) = validator.handleResource(getForwardURI(request))
+    def (EndpointValidator endpointValidator, paramValues) = validator.handleResource(getForwardURI(request))
 
     def req = endpointValidator.handleRequest(request)
 

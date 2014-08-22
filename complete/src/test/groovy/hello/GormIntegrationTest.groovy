@@ -7,12 +7,14 @@ import org.springframework.boot.test.SpringApplicationContextLoader
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.web.WebAppConfiguration
 import services.PersonService
+import spock.lang.Ignore
 import spock.lang.Specification
 
 /**
  * Created by tomas on 8/11/14.
  */
 
+@Ignore
 @ContextConfiguration(loader = SpringApplicationContextLoader.class, classes = Application.class)
 @WebAppConfiguration
 public class GormIntegrationTest extends Specification{

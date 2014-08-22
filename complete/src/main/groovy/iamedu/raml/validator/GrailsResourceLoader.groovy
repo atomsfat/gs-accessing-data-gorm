@@ -8,7 +8,7 @@ public class GrailsResourceLoader implements ResourceLoader {
 
   public GrailsResourceLoader() {
     resourceLoader = new CompositeResourceLoader(
-      new FileResourceLoader("grails-app/conf/"),
+//      new FileResourceLoader("grails-app/conf/"),
       new UrlResourceLoader(),
       new ClassPathResourceLoader()
     )

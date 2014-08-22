@@ -1,25 +1,18 @@
 package iamedu.raml.validator
 
-import com.google.gson.Gson
-import iamedu.raml.exception.*
-
+import com.google.gson.JsonParser
+import iamedu.raml.exception.RamlRequestException
+import iamedu.raml.exception.RamlResponseValidationException
 import org.apache.commons.lang.WordUtils
 import org.commonjava.mimeparse.MIMEParse
-import org.eel.kitchen.jsonschema.main.*
+import org.eel.kitchen.jsonschema.main.JsonSchemaFactory
 import org.eel.kitchen.jsonschema.util.JsonLoader
-
-
-import org.raml.model.*
-import org.raml.model.parameter.*
-import org.raml.parser.visitor.*
-import org.raml.parser.loader.*
+import org.raml.model.Action
+import org.raml.model.Raml
+import org.raml.model.Resource
+import org.raml.parser.loader.ResourceLoader
 
 import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
-import java.util.*
-import com.google.gson.JsonParser
-
-
 
 class EndpointValidator {
   Raml raml

@@ -1,8 +1,10 @@
 package iamedu.raml
 
+import groovy.transform.Canonical
 import iamedu.raml.validator.ApiValidator
 import iamedu.raml.validator.ApiValidatorBuilder
 
+@Canonical
 class RamlHandlerService {
 
   ApiValidator validator
@@ -11,7 +13,7 @@ class RamlHandlerService {
   Boolean reloadRaml
 
 
-  def doBuildValidator(def ramlDefinition) {
+  private ApiValidator doBuildValidator(def ramlDefinition) {
     if(!ramlDefinition) {
       throw new RuntimeException("Raml definition is not set")
     }
@@ -21,7 +23,7 @@ class RamlHandlerService {
     builder.build()
   }
 
-  def buildValidator() {
+  ApiValidator buildValidator() {
 
     if(!validator || reloadRaml) {
       validator = doBuildValidator(ramlDefinition)
