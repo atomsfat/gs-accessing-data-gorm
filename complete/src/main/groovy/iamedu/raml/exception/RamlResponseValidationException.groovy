@@ -18,7 +18,8 @@ class RamlResponseValidationException extends RuntimeException {
     INVALID_BODY,
     INVALID_STATUS_CODE,
     INVALID_MIME_TYPE,
-    INVALID_RESPONSE_BODY
+    INVALID_RESPONSE_BODY,
+    SCHEMA_NOT_DEFINED
   }
 
   RamlResponseValidationException(String message, String serviceName, String method, Integer statusCode, String mimeType, String body, ErrorReason reason) {

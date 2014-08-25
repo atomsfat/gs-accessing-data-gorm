@@ -22,7 +22,7 @@ class EndpointValidator {
 
   private static final Logger log = LoggerFactory.getLogger(EndpointValidator.class)
   Raml raml
-  
+
   String serviceName
   String path
   List params
@@ -33,12 +33,12 @@ class EndpointValidator {
   JsonParser jsonParser = new JsonParser()
 
   EndpointValidator(ResourceLoader loader, Raml raml, String path, Resource resource, List params, Map<String, Action> actions) {
-    this.raml     = raml
-    this.path     = path
-    this.params   = params
+    this.raml = raml
+    this.path = path
+    this.params = params
     this.resource = resource
-    this.loader   = loader
-    this.actions  = actions.collectEntries { k, v ->
+    this.loader = loader
+    this.actions = actions.collectEntries { k, v ->
       [k.toString(), v]
     }
 
@@ -55,12 +55,12 @@ class EndpointValidator {
     def bodyResponse
 
     def body = ramlResponse.value.body.get("application/json")
-    if(body) {
-      if(body.example) {
+    if (body) {
+      if (body.example) {
         def resource = "raml/" + body.example.trim()
         def bodyContents = loader.fetchResource(resource)?.getText("UTF-8")
 
-        if(bodyContents) {
+        if (bodyContents) {
 
           bodyResponse = jsonParser.parse(bodyContents)
         } else {
@@ -74,9 +74,9 @@ class EndpointValidator {
     }
 
     def result = [
-      body: bodyResponse,
-      statusCode: statusCode,
-      contentType: 'application/json'
+        body       : bodyResponse,
+        statusCode : statusCode,
+        contentType: 'application/json'
     ]
 
     result
@@ -90,9 +90,9 @@ class EndpointValidator {
       k.toInteger() < 300
     }
 
-    if(error) {
+    if (error) {
       statusCode = 500
-    } else if(ramlResponse.value.hasBody() && response == null)  {
+    } else if (ramlResponse.value.hasBody() && response == null) {
       statusCode = 404
     } else {
       statusCode = ramlResponse.key.toInteger()
@@ -100,42 +100,56 @@ class EndpointValidator {
 
 
     def result = [
-      body: response,
-      statusCode: statusCode
+        body      : response,
+        statusCode: statusCode
     ]
 
 
-    if(ramlResponse.value.hasBody()) {
-      if(request.headers.get("accept")) {
+    if (ramlResponse.value.hasBody()) {
+      if (request.headers.get("accept")) {
         def bestMatch = MIMEParse.bestMatch(ramlResponse.value.body.keySet(), request.headers.get("accept")?.first())
         result.contentType = bestMatch
       } else {
         def bestMatch = ramlResponse.value.body.keySet().toList().first()
         result.contentType = bestMatch
       }
-        if(strictMode && result.contentType.startsWith("application/json")) {
+      println "fat $strictMode"
+      println result.contentType
+      if (strictMode && result.contentType.startsWith("application/json")) {
+        println "weeee -->>"
         def mimeType = ramlResponse.value.body.get(result.contentType)
-        if(mimeType.schema) {
-          def schemaFormat = JsonLoader.fromString(raml.consolidatedSchemas.get(mimeType.schema))
-          def factory = JsonSchemaFactory.defaultFactory()
-
-          def schema = factory.fromSchema(schemaFormat)
-          Gson gson = new Gson()
-          def stringBody = gson.toJson(result.body)
-          def jsonBody = JsonLoader.fromString(stringBody)
-          def report =  schema.validate(jsonBody)
-
-          if(!report.isSuccess()) {
-            throw new RamlResponseValidationException("The generated response is invalid",
+        println mimeType.schema
+        Gson gson = new Gson()
+        def stringBody = gson.toJson(result.body)
+        if (!mimeType.schema) {
+          throw new RamlResponseValidationException("The generated response is invalid",
               request.serviceName,
               request.method,
-              500, 
+              500,
+              result.contentType,
+              stringBody,
+              RamlResponseValidationException.ErrorReason.SCHEMA_NOT_DEFINED,
+          )
+        }
+
+        def schemaFormat = JsonLoader.from    String(raml.consolidatedSchemas.get(mimeType.schema))
+        def factory = JsonSchemaFactory.defaultFactory()
+
+        def schema = factory.fromSchema(schemaFormat)
+        def jsonBody = JsonLoader.fromString(stringBody)
+        def report = schema.validate(jsonBody)
+
+        if (!report.isSuccess()) {
+          throw new RamlResponseValidationException("The generated response is invalid",
+              request.serviceName,
+              request.method,
+              500,
               result.contentType,
               stringBody,
               RamlResponseValidationException.ErrorReason.INVALID_RESPONSE_BODY,
               report)
-          }
         }
+
       }
     }
 
@@ -143,7 +157,7 @@ class EndpointValidator {
   }
 
   Map handleRequest(HttpServletRequest request) {
-    if(!supportsMethod(request.method)) {
+    if (!supportsMethod(request.method)) {
       throw new RamlRequestException("Method ${request.method} for endpoint ${resource} does not exist", request.forwardURI, request.method)
     }
 
@@ -152,28 +166,28 @@ class EndpointValidator {
     def jsonBody
     def bestMatch
 
-    if(request.queryString) {
+    if (request.queryString) {
       queryParams = request.getParameterMap()
 
-      println "action.queryParameters ${action.queryParameters}"
-      println "action.is ${action.is}"
+      log.debug "action.queryParameters ${action.queryParameters}"
+      log.debug "action.is ${action.is}"
       queryParams = action.queryParameters.collectEntries { k, v ->
         [k, validateParam(queryParams.get(k), v)]
       }
     }
 
     log.debug "queryParams $queryParams"
-    if(action.hasBody()) {
+    if (action.hasBody()) {
       bestMatch = MIMEParse.bestMatch(action.body.keySet(), request.getHeader("Accept"))
       def mimeType
 
-      if(bestMatch) {
+      if (bestMatch) {
         mimeType = action.body.get(bestMatch)
       } else {
         throw new RamlRequestException("Unable to find a matching mime type for ${path}", path, request.method)
       }
 
-      if(mimeType.schema) {
+      if (mimeType.schema) {
         def schemaFormat = JsonLoader.fromString(raml.consolidatedSchemas.get(mimeType.schema))
         def factory = JsonSchemaFactory.defaultFactory()
 
@@ -181,14 +195,14 @@ class EndpointValidator {
 
         def stringBody = request.JSON.toString()
         jsonBody = JsonLoader.fromString(stringBody)
-        def report =  schema.validate(jsonBody)
+        def report = schema.validate(jsonBody)
 
-        if(!report.isSuccess()) {
+        if (!report.isSuccess()) {
           throw new RamlRequestException("Invalid body ${stringBody} for resource ${path} method ${request.method}",
-            path,
-            request.method,
-            report,
-            stringBody)
+              path,
+              request.method,
+              report,
+              stringBody)
         }
       } else {
         def stringBody = gson.toJson(request)
@@ -207,40 +221,40 @@ class EndpointValidator {
     headers.put('accept', request.getHeaders("accept").toList())
 
     def result = [
-      hasBody: action.hasBody(),
-      serviceName: serviceName,
-      jsonBody: jsonBody,
-      params: params,
-      method: request.method,
-      headers: headers,
-      queryParams: queryParams
+        hasBody    : action.hasBody(),
+        serviceName: serviceName,
+        jsonBody   : jsonBody,
+        params     : params,
+        method     : request.method,
+        headers    : headers,
+        queryParams: queryParams
     ]
 
     result
   }
 
- private boolean supportsMethod(String method) {
+  private boolean supportsMethod(String method) {
     method = method.toUpperCase()
 
     actions.containsKey(method)
   }
 
   private def setup() {
-    if(!resource.displayName) {
+    if (!resource.displayName) {
       throw new IllegalArgumentException("Resource ${path} has no display name defined")
     }
 
     def firstChar = "${resource.displayName.charAt(0)}".toLowerCase()
 
     serviceName = WordUtils
-      .capitalizeFully(resource.displayName)
-      .replaceAll(" ", "")
-      .replaceFirst(".", firstChar)
+        .capitalizeFully(resource.displayName)
+        .replaceAll(" ", "")
+        .replaceFirst(".", firstChar)
     serviceName = serviceName + "Service"
   }
 
   private def validateParam(def value, def valueDefinition) {
-    if(!value) {
+    if (!value) {
       value = valueDefinition.defaultValue
     }
     value

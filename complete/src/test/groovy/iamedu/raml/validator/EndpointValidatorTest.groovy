@@ -58,7 +58,7 @@ class EndpointValidatorTest extends Specification {
     ApiValidator av = ramlHandlerService.buildValidator()
     def (EndpointValidator validator, params) = av.handleResource("/sample-api/api/songs")
     Map req =  validator.handleRequest(request)
-    def res = validator.handleResponse(true, req, "", false)
+    def res = validator.handleResponse(false, req, "", false)
     println "HandleResponse $res"
     then:
     res.statusCode == 200

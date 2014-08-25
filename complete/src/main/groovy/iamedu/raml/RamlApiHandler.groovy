@@ -43,9 +43,8 @@ class RamlApiHandler {
 
     def service
     def result
-    def exception
     Boolean error = false
-    log.info "searching service ${req.serviceName}"
+    log.info "We got service ${req.serviceName} ? ${appContext.containsBean(req.serviceName)}"
     if (appContext.containsBean(req.serviceName)) {
       service = appContext.getBean(req.serviceName)
     }
@@ -88,13 +87,14 @@ class RamlApiHandler {
 
   }
 
-  private handleService(def service, Map req, def paramValues) {
+  private handleService(Object service, Map req, def paramValues) {
+
     def result
     def methodName = req.method.toLowerCase()
     def methods = service.class.getMethods().grep {
       it.name == methodName
     }
-
+    println methods
     if (methods.size() == 1) {
       def method = methods.first()
 
@@ -107,13 +107,14 @@ class RamlApiHandler {
       def headers = req.headers.each { k, v ->
         [k, v]
       }
-      log.info("Ready to invoke ${req.serviceName} dataAvailable -> [params : ${params} headers: ${headers}]")
+      log.info("Ready to invoke ${req.serviceName} dataAvailable -> [params : ${params} headers: ${headers}, req: ${req}]")
       if (method.parameterTypes.size() == 0) {
         result = method.invoke(service)
       } else {
         def invokeParams = []
         method.parameterTypes.eachWithIndex { it, i ->
           def param
+          println method.parameterAnnotations
           def headerAnnotation = method.parameterAnnotations[i].find {
             it.annotationType() == iamedu.api.annotations.ApiHeaderParam
           }
@@ -129,6 +130,7 @@ class RamlApiHandler {
             param = paramValue.value.asType(it)
           } else if (queryAnnotation) {
             def parameterName = queryAnnotation.value()
+            println "-------->>>>>$parameterName"
             def paramValue = req.queryParams[parameterName]
             param = paramValue.asType(it)
           } else if (headerAnnotation) {
@@ -140,6 +142,7 @@ class RamlApiHandler {
             param = jsonParser.parse(req.jsonBody.toString())
           }
           invokeParams.push(param)
+          log.info "invokeParams $param"
         }
         result = method.invoke(service, invokeParams as Object[])
       }
