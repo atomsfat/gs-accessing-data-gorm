@@ -38,7 +38,7 @@ class RamlApiHandler {
     def validator = ramlHandlerService.buildValidator()
     def (EndpointValidator endpointValidator, paramValues) = validator.handleResource(getForwardURI(request))
 
-    def req = endpointValidator.handleRequest(request)
+    Map req = endpointValidator.handleRequest(request)
 
 
     def service
@@ -88,7 +88,7 @@ class RamlApiHandler {
 
   }
 
-  private handleService(def service, def req, def paramValues) {
+  private handleService(def service, Map req, def paramValues) {
     def result
     def methodName = req.method.toLowerCase()
     def methods = service.class.getMethods().grep {

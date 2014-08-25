@@ -29,11 +29,9 @@ class ApiValidator {
     setupValidator()
   }
 
-  def handleResource(String resource) {
+  List handleResource(String resource) {
 
-    println resource
-
-    def entry = null
+    Map.Entry entry = null
     Boolean reloadRaml = true
 
     entry = entryCache.get(resource)
@@ -48,7 +46,7 @@ class ApiValidator {
     }
 
     if(entry) {
-      def params = []
+      List params = []
       def matcher = resource =~ entry.key
       if(matcher[0] instanceof java.util.List) {
         params = matcher[0].drop(1).collect { it }
@@ -59,7 +57,7 @@ class ApiValidator {
     }
   }
 
-  private def processEndpoint(String resourcePath, Resource resource, Map<ActionType, Action> actions) {
+  private void processEndpoint(String resourcePath, Resource resource, Map<ActionType, Action> actions) {
     def replacePartPattern = "([^/]*)"
     def partPattern = /\{[^\{\}]*\}/
 
@@ -74,7 +72,7 @@ class ApiValidator {
     endpoints.put(pattern, new EndpointValidator(loader, raml, resourcePath, resource, params, actions))
   }
 
-  private def processEndpoints(String prefix, Map resources) {
+  private void processEndpoints(String prefix, Map resources) {
     resources.each { key, Resource resource ->
       def currentPrefix  = "${prefix}${key}"
       if(resource.actions.size() > 0) {
@@ -84,15 +82,12 @@ class ApiValidator {
     }
   }
 
-  private def setupValidator() {
+  private void setupValidator() {
     endpoints = new HashMap()
-
     basePath = raml.basePath
-
     if(basePath.endsWith("/")) {
       basePath = basePath.substring(0, basePath.length() - 1)
     }
-
     processEndpoints("", raml.resources)
   }
 

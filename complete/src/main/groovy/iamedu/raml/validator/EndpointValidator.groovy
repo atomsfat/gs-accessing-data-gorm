@@ -12,11 +12,15 @@ import org.raml.model.Action
 import org.raml.model.Raml
 import org.raml.model.Resource
 import org.raml.parser.loader.ResourceLoader
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 class EndpointValidator {
+
+  private static final Logger log = LoggerFactory.getLogger(EndpointValidator.class)
   Raml raml
   
   String serviceName
@@ -41,7 +45,7 @@ class EndpointValidator {
     setup()
   }
 
-  def generateExampleResponse(def request) {
+  Map generateExampleResponse(Map request) {
     def action = actions.get(request.method.toUpperCase())
     def ramlResponse = action.getResponses().find { k, v ->
       k.toInteger() < 300
@@ -78,7 +82,7 @@ class EndpointValidator {
     result
   }
 
-  def handleResponse(Boolean strictMode, HttpServletRequest request, HttpServletResponse response, Boolean error) {
+  Map handleResponse(Boolean strictMode, Map request, String response, Boolean error) {
     Action action = actions.get(request.method.toUpperCase())
     Integer statusCode
 
@@ -102,14 +106,14 @@ class EndpointValidator {
 
 
     if(ramlResponse.value.hasBody()) {
-      if(request.getHeaders("accept")) {
-        def bestMatch = MIMEParse.bestMatch(ramlResponse.value.body.keySet(), request.getHeaders("accept")?.first())
+      if(request.headers.get("accept")) {
+        def bestMatch = MIMEParse.bestMatch(ramlResponse.value.body.keySet(), request.headers.get("accept")?.first())
         result.contentType = bestMatch
       } else {
         def bestMatch = ramlResponse.value.body.keySet().toList().first()
         result.contentType = bestMatch
       }
-      if(strictMode && result.contentType.startsWith("application/json")) {
+        if(strictMode && result.contentType.startsWith("application/json")) {
         def mimeType = ramlResponse.value.body.get(result.contentType)
         if(mimeType.schema) {
           def schemaFormat = JsonLoader.fromString(raml.consolidatedSchemas.get(mimeType.schema))
@@ -138,7 +142,7 @@ class EndpointValidator {
     result
   }
 
-  def handleRequest(HttpServletRequest request) {
+  Map handleRequest(HttpServletRequest request) {
     if(!supportsMethod(request.method)) {
       throw new RamlRequestException("Method ${request.method} for endpoint ${resource} does not exist", request.forwardURI, request.method)
     }
@@ -158,7 +162,7 @@ class EndpointValidator {
       }
     }
 
-    println "queryParams $queryParams"
+    log.debug "queryParams $queryParams"
     if(action.hasBody()) {
       bestMatch = MIMEParse.bestMatch(action.body.keySet(), request.getHeader("Accept"))
       def mimeType
@@ -215,7 +219,7 @@ class EndpointValidator {
     result
   }
 
-  boolean supportsMethod(String method) {
+ private boolean supportsMethod(String method) {
     method = method.toUpperCase()
 
     actions.containsKey(method)

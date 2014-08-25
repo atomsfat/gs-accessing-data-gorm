@@ -27,7 +27,7 @@ class ApiValidatorBuilder {
     this
   }
 
-  private def validateRaml(String ramlLocation) {
+  private void validateRaml(String ramlLocation) {
     def validationService = RamlValidationService.createDefault(resourceLoader)
     def results = validationService.validate(ramlLocation)
     if(results.size() > 0) {
