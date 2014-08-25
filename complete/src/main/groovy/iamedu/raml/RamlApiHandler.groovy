@@ -44,7 +44,7 @@ class RamlApiHandler {
     def service
     def result
     def exception
-    def error = false
+    Boolean error = false
     log.info "searching service ${req.serviceName}"
     if (appContext.containsBean(req.serviceName)) {
       service = appContext.getBean(req.serviceName)

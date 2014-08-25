@@ -1,5 +1,6 @@
 package iamedu.raml.validator
 
+import com.google.gson.Gson
 import com.google.gson.JsonParser
 import iamedu.raml.exception.RamlRequestException
 import iamedu.raml.exception.RamlResponseValidationException
@@ -13,6 +14,7 @@ import org.raml.model.Resource
 import org.raml.parser.loader.ResourceLoader
 
 import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.HttpServletResponse
 
 class EndpointValidator {
   Raml raml
@@ -76,9 +78,9 @@ class EndpointValidator {
     result
   }
 
-  def handleResponse(Boolean strictMode, def request, def response, def error) {
-    def action = actions.get(request.method.toUpperCase())
-    def statusCode
+  def handleResponse(Boolean strictMode, HttpServletRequest request, HttpServletResponse response, Boolean error) {
+    Action action = actions.get(request.method.toUpperCase())
+    Integer statusCode
 
     def ramlResponse = action.getResponses().find { k, v ->
       k.toInteger() < 300
@@ -100,8 +102,8 @@ class EndpointValidator {
 
 
     if(ramlResponse.value.hasBody()) {
-      if(request.headers.get("accept")) {
-        def bestMatch = MIMEParse.bestMatch(ramlResponse.value.body.keySet(), request.headers.get("accept")?.first())
+      if(request.getHeaders("accept")) {
+        def bestMatch = MIMEParse.bestMatch(ramlResponse.value.body.keySet(), request.getHeaders("accept")?.first())
         result.contentType = bestMatch
       } else {
         def bestMatch = ramlResponse.value.body.keySet().toList().first()
@@ -114,7 +116,7 @@ class EndpointValidator {
           def factory = JsonSchemaFactory.defaultFactory()
 
           def schema = factory.fromSchema(schemaFormat)
-
+          Gson gson = new Gson()
           def stringBody = gson.toJson(result.body)
           def jsonBody = JsonLoader.fromString(stringBody)
           def report =  schema.validate(jsonBody)
@@ -148,12 +150,15 @@ class EndpointValidator {
 
     if(request.queryString) {
       queryParams = request.getParameterMap()
+
+      println "action.queryParameters ${action.queryParameters}"
+      println "action.is ${action.is}"
       queryParams = action.queryParameters.collectEntries { k, v ->
         [k, validateParam(queryParams.get(k), v)]
       }
     }
 
-
+    println "queryParams $queryParams"
     if(action.hasBody()) {
       bestMatch = MIMEParse.bestMatch(action.body.keySet(), request.getHeader("Accept"))
       def mimeType

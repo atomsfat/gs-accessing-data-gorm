@@ -17,7 +17,7 @@ class ApiValidator {
   Integer maxCacheCapacity = 5000
   Raml raml
   ResourceLoader loader
-  Map endpoints
+  Map<Pattern, EndpointValidator> endpoints
   Map entryCache
 
   ApiValidator(Raml raml, ResourceLoader loader) {
@@ -33,13 +33,12 @@ class ApiValidator {
 
     println resource
 
-    EndpointValidator entry = null
-    def reloadRaml = true
+    def entry = null
+    Boolean reloadRaml = true
 
     entry = entryCache.get(resource)
-
     if(!entry) {
-      entry = endpoints.find { endpoint, validator ->
+      entry = endpoints.find {Pattern endpoint, EndpointValidator validator ->
         def matcher = resource =~ endpoint
         matcher.matches()
       }
@@ -70,7 +69,7 @@ class ApiValidator {
       [k, resource.uriParameters.get(k)]
     }
 
-    def pattern = Pattern.compile(basePath + regexPath)
+    Pattern pattern = Pattern.compile(basePath + regexPath)
     
     endpoints.put(pattern, new EndpointValidator(loader, raml, resourcePath, resource, params, actions))
   }
