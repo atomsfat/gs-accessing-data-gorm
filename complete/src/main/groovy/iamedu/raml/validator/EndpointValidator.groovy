@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import java.lang.reflect.Array
 
 class EndpointValidator {
 
@@ -173,7 +174,7 @@ class EndpointValidator {
       }
     }
 
-    log.debug "queryParams $queryParams"
+    log.info "queryParams $queryParams"
     if (action.hasBody()) {
       bestMatch = MIMEParse.bestMatch(action.body.keySet(), request.getHeader("Accept"))
       def mimeType
@@ -190,7 +191,7 @@ class EndpointValidator {
 
         def schema = factory.fromSchema(schemaFormat)
 
-        def stringBody = request.JSON.toString()
+        def stringBody = request.toString()
         jsonBody = JsonLoader.fromString(stringBody)
         def report = schema.validate(jsonBody)
 
@@ -202,18 +203,22 @@ class EndpointValidator {
               stringBody)
         }
       } else {
+        Gson gson = new Gson()
         def stringBody = gson.toJson(request)
         jsonBody = JsonLoader.fromString(stringBody)
       }
     }
 
+    log.info "request.headerNames ${request.headerNames.toList()}"
+    log.info "action.headers ${action.headers}"
     def headerValues = request.headerNames.toList().collectEntries {
       [it, request.getHeaders(it).toList()]
     }
     def headers = action.headers.collectEntries { k, v ->
-      def headerValue = validateParam(headerValues.get(k.toLowerCase())?.first(), v)
+      def headerValue = validateParam(headerValues.get(k)?.first(), v)
       [k, headerValue]
     }
+    log.info "result.header ${headers}"
 
     headers.put('accept', request.getHeaders("accept").toList())
 

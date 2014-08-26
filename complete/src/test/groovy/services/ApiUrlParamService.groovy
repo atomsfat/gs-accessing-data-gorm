@@ -6,7 +6,7 @@ import iamedu.api.annotations.ApiUrlParam
 /**
  * Created by tomas on 8/25/14.
  */
-public interface SongService {
+public interface ApiUrlParamService {
 
   String get(@ApiUrlParam("songId") String search)
 

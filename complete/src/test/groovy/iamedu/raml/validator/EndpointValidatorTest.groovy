@@ -36,56 +36,55 @@ class EndpointValidatorTest extends Specification {
 
   def "GenerateExampleResponse"() {
     when:
-    RamlHandlerService ramlHandlerService = new RamlHandlerService(ramlDefinition: "raml/jukebox-api.raml", reloadRaml: true)
-    ApiValidator av = ramlHandlerService.buildValidator()
-    def (EndpointValidator validator, params) = av.handleResource("/sample-api/api/songs")
-    Map req =  validator.handleRequest(request)
-    def example =  validator.generateExampleResponse(req)
-    println "GenerateExampleResponse $example"
+      RamlHandlerService ramlHandlerService = new RamlHandlerService(ramlDefinition: "raml/jukebox-api.raml", reloadRaml: true)
+      ApiValidator av = ramlHandlerService.buildValidator()
+      def (EndpointValidator validator, params) = av.handleResource("/sample-api/api/songs")
+      Map req = validator.handleRequest(request)
+      def example = validator.generateExampleResponse(req)
+      println "GenerateExampleResponse $example"
     then:
-    example != null
-    example.contentType == "application/json"
-    example.body
-    example.statusCode == 200
-
+      example != null
+      example.contentType == "application/json"
+      example.body
+      example.statusCode == 200
 
 
   }
 
   def "HandleResponse"() {
     when:
-    RamlHandlerService ramlHandlerService = new RamlHandlerService(ramlDefinition: "raml/jukebox-api.raml", reloadRaml: true)
-    ApiValidator av = ramlHandlerService.buildValidator()
-    def (EndpointValidator validator, params) = av.handleResource("/sample-api/api/songs")
-    Map req =  validator.handleRequest(request)
-    def res = validator.handleResponse(false, req, "", false)
-    println "HandleResponse $res"
+      RamlHandlerService ramlHandlerService = new RamlHandlerService(ramlDefinition: "raml/jukebox-api.raml", reloadRaml: true)
+      ApiValidator av = ramlHandlerService.buildValidator()
+      def (EndpointValidator validator, params) = av.handleResource("/sample-api/api/songs")
+      Map req = validator.handleRequest(request)
+      def res = validator.handleResponse(false, req, "", false)
+      println "HandleResponse $res"
     then:
-    res.statusCode == 200
-    res.contentType == "application/json"
+      res.statusCode == 200
+      res.contentType == "application/json"
 
 
   }
 
   def "HandleRequest"() {
     when:
-    RamlHandlerService ramlHandlerService = new RamlHandlerService(ramlDefinition: "raml/jukebox-api.raml", reloadRaml: true)
-    ApiValidator av = ramlHandlerService.buildValidator()
-    def (EndpointValidator validator, params) = av.handleResource("/sample-api/api/songs")
-    def req = validator.handleRequest(request)
-    println "HandleRequest $req"
+      RamlHandlerService ramlHandlerService = new RamlHandlerService(ramlDefinition: "raml/jukebox-api.raml", reloadRaml: true)
+      ApiValidator av = ramlHandlerService.buildValidator()
+      def (EndpointValidator validator, params) = av.handleResource("/sample-api/api/songs")
+      def req = validator.handleRequest(request)
+      println "HandleRequest $req"
     then:
-    req != null
+      req != null
 
 
   }
 
   def "SupportsMethod"() {
     when:
-    RamlHandlerService ramlHandlerService = new RamlHandlerService(ramlDefinition: "raml/jukebox-api.raml", reloadRaml: true)
-    ApiValidator av = ramlHandlerService.buildValidator()
-    def (EndpointValidator validator, params) = av.handleResource("/sample-api/api/songs")
+      RamlHandlerService ramlHandlerService = new RamlHandlerService(ramlDefinition: "raml/jukebox-api.raml", reloadRaml: true)
+      ApiValidator av = ramlHandlerService.buildValidator()
+      def (EndpointValidator validator, params) = av.handleResource("/sample-api/api/songs")
     then:
-    validator.supportsMethod("get") == true
+      validator.supportsMethod("get") == true
   }
 }

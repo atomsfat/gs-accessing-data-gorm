@@ -42,30 +42,30 @@ class ApiValidatorTest extends Specification {
   void "HandleRequest"() {
 
     when:
-    RamlHandlerService ramlHandlerService = new RamlHandlerService(ramlDefinition: "raml/jukebox-api.raml", reloadRaml: true)
-    ApiValidator av = ramlHandlerService.buildValidator()
-    def (EndpointValidator validator,List params) = av.handleResource("/sample-api/api/songs")
-    def result = validator.handleRequest(request)
+      RamlHandlerService ramlHandlerService = new RamlHandlerService(ramlDefinition: "raml/jukebox-api.raml", reloadRaml: true)
+      ApiValidator av = ramlHandlerService.buildValidator()
+      def (EndpointValidator validator, List params) = av.handleResource("/sample-api/api/songs")
+      def result = validator.handleRequest(request)
     then:
-    validator != null
-    params.size() == 0
-    result.serviceName == "songsService"
-    result.queryParams.get("query") != null
+      validator != null
+      params.size() == 0
+      result.serviceName == "songsService"
+      result.queryParams.get("query") != null
 
   }
 
   void "HandleRequest URI parameter"() {
 
     when:
-    RamlHandlerService ramlHandlerService = new RamlHandlerService(ramlDefinition: "raml/jukebox-api.raml", reloadRaml: true)
-    ApiValidator av = ramlHandlerService.buildValidator()
-    def (EndpointValidator validator,List params) = av.handleResource("/sample-api/api/songs/10")
-    def result = validator.handleRequest(request)
+      RamlHandlerService ramlHandlerService = new RamlHandlerService(ramlDefinition: "raml/jukebox-api.raml", reloadRaml: true)
+      ApiValidator av = ramlHandlerService.buildValidator()
+      def (EndpointValidator validator, List params) = av.handleResource("/sample-api/api/songs/10")
+      def result = validator.handleRequest(request)
     then:
-    validator != null
-    params.size() == 1
-    result.serviceName == "songService"
-    result.params.size() == 1
+      validator != null
+      params.size() == 1
+      result.serviceName == "songService"
+      result.params.size() == 1
 
   }
 
