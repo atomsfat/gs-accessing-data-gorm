@@ -61,7 +61,7 @@ class RamlApiHandler {
       result = endpointValidator.handleResponse(strictMode, req, result, error)
     } catch (RamlResponseValidationException ex) {
       def beans = appContext.getBeansOfType(RamlResponseValidationExceptionHandler.class)
-      beans.each {
+      beans.each { RamlResponseValidationExceptionHandler it ->
         it.handleResponseValidationException(ex)
       }
 
