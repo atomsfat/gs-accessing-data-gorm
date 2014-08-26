@@ -113,12 +113,9 @@ class EndpointValidator {
         def bestMatch = ramlResponse.value.body.keySet().toList().first()
         result.contentType = bestMatch
       }
-      println "fat $strictMode"
-      println result.contentType
+
       if (strictMode && result.contentType.startsWith("application/json")) {
-        println "weeee -->>"
         def mimeType = ramlResponse.value.body.get(result.contentType)
-        println mimeType.schema
         Gson gson = new Gson()
         def stringBody = gson.toJson(result.body)
         if (!mimeType.schema) {

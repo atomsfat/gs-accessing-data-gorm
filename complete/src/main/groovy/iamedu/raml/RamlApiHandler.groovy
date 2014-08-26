@@ -94,7 +94,6 @@ class RamlApiHandler {
     def methods = service.class.getMethods().grep {
       it.name == methodName
     }
-    println methods
     if (methods.size() == 1) {
       def method = methods.first()
 
@@ -114,7 +113,6 @@ class RamlApiHandler {
         def invokeParams = []
         method.parameterTypes.eachWithIndex { it, i ->
           def param
-          println method.parameterAnnotations
           def headerAnnotation = method.parameterAnnotations[i].find {
             it.annotationType() == iamedu.api.annotations.ApiHeaderParam
           }
@@ -130,7 +128,6 @@ class RamlApiHandler {
             param = paramValue.value.asType(it)
           } else if (queryAnnotation) {
             def parameterName = queryAnnotation.value()
-            println "-------->>>>>$parameterName"
             def paramValue = req.queryParams[parameterName]
             param = paramValue.asType(it)
           } else if (headerAnnotation) {
