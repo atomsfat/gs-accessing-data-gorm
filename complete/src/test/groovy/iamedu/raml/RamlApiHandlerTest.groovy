@@ -1,19 +1,19 @@
 package iamedu.raml
 
-import iamedu.api.annotations.ApiHeaderParam
-import iamedu.api.annotations.ApiQueryParam
-import iamedu.api.annotations.ApiUrlParam
 import iamedu.raml.exception.RamlResponseValidationException
 import org.springframework.context.ApplicationContext
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import services.ApiHeaderParamService
-import services.ApiUrlParamService
 import services.ApiQueryParamService
+import services.ApiUrlParamService
 import spock.lang.Specification
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import javax.ws.rs.HeaderParam
+import javax.ws.rs.PathParam
+import javax.ws.rs.QueryParam
 
 /**
  * Created by tomas on 8/25/14.
@@ -114,11 +114,11 @@ class RamlApiHandlerTest extends Specification {
 
   }
 
-  def "Handle with service @ApiQueryParam"() {
+  def "Handle with service @QueryParam"() {
     setup:
       ApiQueryParamService songsService = new ApiQueryParamService() {
         @Override
-        String get(@ApiQueryParam("query") String query) {
+        String get(@QueryParam("query") String query) {
           query
         }
       }
@@ -138,12 +138,12 @@ class RamlApiHandlerTest extends Specification {
       res.body.toString() == '"metro"'
   }
 
-  def "Handle with service @ApiUrlParam"() {
+  def "Handle with service @PathParam"() {
 
     setup:
       ApiUrlParamService songService = new ApiUrlParamService() {
         @Override
-        String get(@ApiUrlParam("songId") String songId) {
+        String get(@PathParam("songId") String songId) {
           return songId
         }
       }
@@ -165,12 +165,12 @@ class RamlApiHandlerTest extends Specification {
       res.body.toString() == '"10"'
   }
 
-  def "Handle with service @ApiHeaderParam"() {
+  def "Handle with service @HeaderParam"() {
 
     setup:
       ApiHeaderParamService songsService = new ApiHeaderParamService() {
         @Override
-        String get(@ApiHeaderParam("X-Auth-Token") String token) {
+        String get(@HeaderParam("X-Auth-Token") String token) {
           return token
         }
       }

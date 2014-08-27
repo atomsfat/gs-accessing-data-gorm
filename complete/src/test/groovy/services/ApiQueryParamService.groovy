@@ -1,12 +1,11 @@
 package services
 
-import iamedu.api.annotations.ApiQueryParam
-
+import javax.ws.rs.QueryParam
 
 /**
  * Created by tomas on 8/21/14.
  */
 interface ApiQueryParamService {
-  String get(@ApiQueryParam("query") String query)
+  String get(@QueryParam("query") String query)
 }
 

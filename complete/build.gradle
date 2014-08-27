@@ -48,7 +48,7 @@ dependencies {
     exclude group: "junit"
   }
 
-  compile 'iamedu.api:api-annotations:0.1.0'
+  compile 'javax.ws.rs:javax.ws.rs-api:2.0.1'
 
   runtime("com.h2database:h2")
 //    testCompile("junit:junit")

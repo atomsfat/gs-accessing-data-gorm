@@ -17,6 +17,9 @@ import org.springframework.web.util.WebUtils
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import javax.ws.rs.HeaderParam
+import javax.ws.rs.PathParam
+import javax.ws.rs.QueryParam
 
 /**
  * Created by atomsfat on 8/20/14.
@@ -114,13 +117,13 @@ class RamlApiHandler {
         method.parameterTypes.eachWithIndex { it, i ->
           def param
           def headerAnnotation = method.parameterAnnotations[i].find {
-            it.annotationType() == iamedu.api.annotations.ApiHeaderParam
+            it.annotationType() == HeaderParam
           }
           def paramAnnotation = method.parameterAnnotations[i].find {
-            it.annotationType() == iamedu.api.annotations.ApiUrlParam
+            it.annotationType() == PathParam
           }
           def queryAnnotation = method.parameterAnnotations[i].find {
-            it.annotationType() == iamedu.api.annotations.ApiQueryParam
+            it.annotationType() == QueryParam
           }
           if (paramAnnotation) {
             def parameterName = paramAnnotation.value()
